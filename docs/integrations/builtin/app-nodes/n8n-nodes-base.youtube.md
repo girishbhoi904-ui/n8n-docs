@@ -1,4 +1,49 @@
----
+---{
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "get",
+        "videoId": "={{ $json.videoId }}"
+      },
+      "id": "youtube-node",
+      "name": "Get YouTube Video",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "youTubeApi": {
+          "id": "YOUR_CREDENTIAL_ID"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/captions",
+        "options": {}
+      },
+      "id": "transcript-node",
+      "name": "Get Video Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [670, 300]
+    }
+  ],
+  "connections": {
+    "Get YouTube Video": {
+      "main": [
+        [
+          {
+            "node": "Get Video Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
+
 title: YouTube node documentation
 description: Learn how to use the YouTube node in n8n. Follow technical documentation to integrate YouTube node into your workflows.
 contentType: [integration, reference]
