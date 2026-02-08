@@ -1,4 +1,99 @@
----
+---{
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "resource": "video",
+        "filters": {}
+      },
+      "id": "trigger-node",
+      "name": "YouTube Trigger",
+      "type": "n8n-nodes-base.youTubeTrigger",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "content": "You are a YouTube SEO expert. Write a professional, engaging description with hashtags."
+            },
+            {
+              "content": "=Write a catchy YouTube description for a video titled: {{$json.snippet.title}}. Also include relevant hashtags."
+            }
+          ]
+        }
+      },
+      "id": "openai-node",
+      "name": "ChatGPT SEO",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.2,
+      "position": [320, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_ID",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "update",
+        "videoId": "={{$node[\"YouTube Trigger\"].json[\"id\"][\"videoId\"]}}",
+        "snippet": {
+          "title": "={{$node[\"YouTube Trigger\"].json[\"snippet\"][\"title\"]}}",
+          "description": "={{$json.choices[0].message.content}}"
+        }
+      },
+      "id": "update-node",
+      "name": "YouTube Update",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [540, 300],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "YOUR_YOUTUBE_ID",
+          "name": "YouTube Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "YouTube Trigger": {
+      "main": [
+        [
+          {
+            "node": "ChatGPT SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatGPT SEO": {
+      "main": [
+        [
+          {
+            "node": "YouTube Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
+
 contentType: tutorial
 ---
 
